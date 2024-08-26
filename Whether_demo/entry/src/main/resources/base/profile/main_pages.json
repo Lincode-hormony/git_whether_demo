@@ -1,0 +1,7 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/City_Rdb",
+    "pages/Setting"
+  ]
+}
