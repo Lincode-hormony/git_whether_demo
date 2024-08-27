@@ -63,16 +63,25 @@ struct City_Rdb {
 
   aboutToAppear(): void {
 this.Get_preference().then((preference)=>{
-  preference.get('city','lalala').then((v)=>{
-    this.a=v as string
+  preference.get('city_data',[]).then((v)=>{
+    console.info('拿了数据'+v)
+    this.city=v as CityPassViewModel[]
   })
 })
 
 
   }
 
+  onPageHide(): void {
+    this.Get_preference().then((preference)=>{
+      preference.put('city_data',this.city)
+      console.info('放入了数据'+this.city)
+      preference.flush()
+    })
+  }
+
   Get_preference(){
-    return preferences.getPreferences(getContext(this),'city')
+    return preferences.getPreferences(getContext(this),'city_data')
   }
 
   build() {

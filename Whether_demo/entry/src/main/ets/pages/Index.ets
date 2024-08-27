@@ -22,6 +22,7 @@ import {DailyViewModel} from '../viewmodel/Daily_viewmodel'
 import {AirViewModel} from '../viewmodel/Air_viewmodel'
 import {GirdViewModel} from '../viewmodel/Gird_viewmodel'
 import {TimeViewModel} from '../viewmodel/Time_viewmodel'
+import {CityMainViewModel} from '../viewmodel/CityMain_viewmodel'
 
 
 import HttpUtil_now from '../Util/HttpUtil_now'
@@ -31,6 +32,7 @@ import HttpUtil_warn from '../Util/HttpUtil_warn'
 import HttpUtil_hourly from '../Util/HttpUtil_hourly'
 
 import help from '../Util/Help'
+import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
 
 @Entry
 @Component
@@ -49,7 +51,9 @@ struct Index {
   @State GirdData:GirdViewModel=new GirdViewModel()
   @State TimeData:TimeViewModel=new TimeViewModel()
 
-
+  // @State CityData:CityMainViewModel=new CityMainViewModel()
+  //
+  // @State city:Array<CityPassViewModel>=[]
 
 
    aboutToAppear(): void {
@@ -107,52 +111,57 @@ struct Index {
      }else {
        this.Get_preference().then((preference:preferences.Preferences)=>{
          preference.get('city','101010100').then((v)=>{
-           this.city_Num=v as string
+            this.city_Num=v as string
 
-           //拿组件温度的数据
-           HttpUtil_now.GetData(this.city_Num).then((now)=>{
-             HttpUtil_daily.GetData(this.city_Num).then((city)=>{
-               HttpUtil_air.GetData(this.city_Num).then((air)=>{
-                 this.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+
+
+             //拿组件温度的数据
+             HttpUtil_now.GetData(this.city_Num).then((now)=>{
+               HttpUtil_daily.GetData(this.city_Num).then((city)=>{
+                 HttpUtil_air.GetData(this.city_Num).then((air)=>{
+                   this.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+                 })
                })
              })
-           })
 
-           //拿滚动组件的数据
-           HttpUtil_warn.GetData(this.city_Num).then((warn)=>{
-             this.SwiperData=help.get_Swiper_data(warn.warning[0])
-           })
+             //拿滚动组件的数据
+             HttpUtil_warn.GetData(this.city_Num).then((warn)=>{
+               this.SwiperData=help.get_Swiper_data(warn.warning[0])
+             })
 
-           //获取每小时天气
-           HttpUtil_hourly.GetData(this.city_Num).then((hourly)=>{
-             this.HourlyData=help.get_TimeList_data(hourly)
-           })
+             //获取每小时天气
+             HttpUtil_hourly.GetData(this.city_Num).then((hourly)=>{
+               this.HourlyData=help.get_TimeList_data(hourly)
+             })
 
-           //获取每天天气
-           HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-             this.DailyData=help.get_DayList_data(daily)
-           })
+             //获取每天天气
+             HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
+               this.DailyData=help.get_DayList_data(daily)
+             })
 
-           //获取空气质量数据
-           HttpUtil_air.GetData(this.city_Num).then((air)=>{
-             this.AirData=help.get_Air_data(air.aqi[0])
-           })
+             //获取空气质量数据
+             HttpUtil_air.GetData(this.city_Num).then((air)=>{
+               this.AirData=help.get_Air_data(air.aqi[0])
+             })
 
-           //拿各种数据
-           HttpUtil_now.GetData(this.city_Num).then((now)=>{
-             HttpUtil_daily.GetData(this.city_Num).then((daily)=>[
-               this.GirdData=help.get_Gird_data(daily.daily[0],now.now)
-             ])
-           })
+             //拿各种数据
+             HttpUtil_now.GetData(this.city_Num).then((now)=>{
+               HttpUtil_daily.GetData(this.city_Num).then((daily)=>[
+                 this.GirdData=help.get_Gird_data(daily.daily[0],now.now)
+               ])
+             })
 
-           //日出日落
-           HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-             this.TimeData=help.get_Time_data(daily.daily[0])
-           })
+             //日出日落
+             HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
+               this.TimeData=help.get_Time_data(daily.daily[0])
+             })
 
-           HttpUtil_city.GetData(this.city_Num).then((v)=>{
-             this.city_name=v.location[0].name
-           })
+             HttpUtil_city.GetData(this.city_Num).then((v)=>{
+               this.city_name=v.location[0].name
+             })
+
+
+
 
          })
        })
@@ -166,6 +175,7 @@ struct Index {
    onPageHide(): void {
      this.Get_preference().then((preference)=>{
        preference.put('city',this.city_Num)
+       console.info('放入了数据'+this.city_Num)
        preference.flush()
      })
    }
@@ -227,7 +237,6 @@ struct Index {
             //温度显示
             ListItem(){
               ShowNum({itemInfo:$ShowNumData})
-
             }
             .margin({top:60})
 
