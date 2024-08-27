@@ -1,9 +1,9 @@
 import { router } from '@kit.ArkUI'
 import CustomDialogComponent from '../view/Dialog_Add'
 import {city} from '../model/CityModel'
-
-
-
+import { preferences } from '@kit.ArkData'
+import HttpUtil_city from '../Util/HttpUtil_city'
+import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
 
 
 //
@@ -42,7 +42,9 @@ import {city} from '../model/CityModel'
 @Component
 struct City_Rdb {
 
-  @State city:Array<city>=[]
+
+  @State city:Array<CityPassViewModel>=[]
+  @State a:string='x'
 
 
   dialogController:CustomDialogController=new CustomDialogController({
@@ -57,7 +59,23 @@ struct City_Rdb {
     customStyle:true,
 
   })
-build() {
+
+
+  aboutToAppear(): void {
+this.Get_preference().then((preference)=>{
+  preference.get('city','lalala').then((v)=>{
+    this.a=v as string
+  })
+})
+
+
+  }
+
+  Get_preference(){
+    return preferences.getPreferences(getContext(this),'city')
+  }
+
+  build() {
   Stack({alignContent:Alignment.Top}){
 
     Row(){
@@ -66,6 +84,7 @@ build() {
           router.back()
         })
         Text('城市管理').margin({left:10}).fontSize(17)
+        Text(this.a)
       }.layoutWeight(1)
 
       Image($r('app.media.qiya')).width(20).backgroundColor(Color.Blue).margin({right:30})
@@ -80,7 +99,7 @@ build() {
       ListItem() {
         Column() {
           Row() {
-            Text('北京市').margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
+            Text('北京').margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
             Text('34°').margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
           }
           .width('100%')
@@ -96,7 +115,7 @@ build() {
 
 
         }
-        .backgroundColor(Color.Orange)
+        .backgroundColor('#ff2c6bca')
         .width(315)
         .height(95)
         .margin({ left: 20, right: 20 })
@@ -115,19 +134,19 @@ build() {
       })
 
 
-      ForEach(this.city,(value:city)=>{
+      ForEach(this.city,(value:CityPassViewModel)=>{
         ListItem(){
           Column(){
             Row(){
-              Text(value.city).margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
-              Text(value.temp).margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
+              Text(value.name).margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
+              Text('sss').margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
             }
             .width('100%')
             .justifyContent(FlexAlign.SpaceBetween)
 
             Row(){
-              Text(`空气${value.air_level}`+'    '+value.air_value?.toString()).margin(15).fontColor('#66ffffff').fontSize(16).fontWeight(300)
-              Text(value.whether).margin(15).fontColor(Color.White).fontSize(16).fontWeight(500)
+              Text(`空气${'sss'}`+'    '+'sss'?.toString()).margin(15).fontColor('#66ffffff').fontSize(16).fontWeight(300)
+              Text('sss').margin(15).fontColor(Color.White).fontSize(16).fontWeight(500)
             }
             .width('100%')
             .justifyContent(FlexAlign.SpaceBetween)
@@ -135,13 +154,22 @@ build() {
             //.backgroundColor(Color.Blue)
 
           }
-          .backgroundColor(Color.Orange)
+          .backgroundColor('#ff2c6bca')
           .width(315)
           .height(95)
           .margin({left:20,right:20})
           .borderRadius(10)
         }
         .margin({bottom:15})
+        .onClick(()=>{
+          router.pushUrl({
+            url:'pages/Index',
+            params:{
+              info:value.id
+            }
+
+          })
+        })
       })
     }
     .margin({top:50})

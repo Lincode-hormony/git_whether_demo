@@ -183,11 +183,11 @@ struct Index {
           Text(this.city_name)
             .fontSize(22)
             .fontColor(Color.White)
-            .margin({top:6,bottom:3})
-          Image($r('app.media.dingwei'))
-            .width(14)
-            .alignSelf(ItemAlign.Start)
-            .margin({left:10})
+            .margin({top:15})
+          // Image($r('app.media.dingwei'))
+          //   .width(14)
+          //   .alignSelf(ItemAlign.Start)
+          //   .margin({left:10})
         }
         .width(80)
         .height(50)
@@ -215,82 +215,101 @@ struct Index {
       .width('100%')
       .backgroundColor('#ff2c6bca')
       .width('100%')
-      .height(55)
+      .height(37)
       .zIndex(99)
 
 
-      //List组件
-      List(){
-        //温度显示
-        ListItem(){
-          ShowNum({itemInfo:$ShowNumData})
 
-        }
-        .margin({top:60})
+      Swiper(){
+        ForEach([1,2,3],()=>{
+          //List组件
+          List(){
+            //温度显示
+            ListItem(){
+              ShowNum({itemInfo:$ShowNumData})
 
-        //建议
-         ListItem(){
-           mySwiper({itemInfo:$SwiperData})
-         }
-         .margin({top:50})
+            }
+            .margin({top:60})
 
-        //时间段
-        ListItem(){
-          TimeList({itemInfo:$HourlyData})
-        }
-        .margin({top:20})
+            //建议
+            ListItem(){
+              mySwiper({itemInfo:$SwiperData})
+            }
+            .margin({top:50})
 
-        //未来十五天
-        ListItem(){
-          DayList({itemInfo:$DailyData})
-        }
-        .margin({top:20})
+            //时间段
+            ListItem(){
+              TimeList({itemInfo:$HourlyData})
+            }
+            .margin({top:20})
 
-        //空气质量
-        ListItem(){
-          Air({itemInfo:$AirData})
-        }
-        .margin({top:20})
+            //未来十五天
+            ListItem(){
+              DayList({itemInfo:$DailyData})
+            }
+            .margin({top:20})
 
-        //六张小卡片
-        ListItem(){
-          myGird({itemInfo:$GirdData})
-        }
-        .margin({top:20})
+            //空气质量
+            ListItem(){
+              Air({itemInfo:$AirData})
+            }
+            .margin({top:20})
 
-        //日出日落
-        ListItem(){
-          Time({itemInfo:$TimeData})
-        }
-        .margin({top:20})
+            //六张小卡片
+            ListItem(){
+              myGird({itemInfo:$GirdData})
+            }
+            .margin({top:20})
 
-        //央视预报
-        ListItem(){
-          myVideo()
-        }
-        .margin({top:20})
+            //日出日落
+            ListItem(){
+              Time({itemInfo:$TimeData})
+            }
+            .margin({top:20})
 
-        //生活建议
-        ListItem(){
-          Advice()
-        }
-        .margin({top:20})
+            //央视预报
+            ListItem(){
+              myVideo()
+            }
+            .margin({top:20})
 
-        ListItem(){
-          Text('OpenHarmony--天气预报')
-            .textAlign(TextAlign.Center)
-            .width('100%')
-            .fontColor('#b3ffffff')
-            .fontWeight(800)
-        }
-        .margin({top:20})
+            //生活建议
+            ListItem(){
+              Advice()
+            }
+            .margin({top:20})
+
+            ListItem(){
+              Text('OpenHarmony--天气预报')
+                .textAlign(TextAlign.Center)
+                .width('100%')
+                .fontColor('#b3ffffff')
+                .fontWeight(800)
+            }
+            .margin({top:20})
 
 
+          }
+          .width('100%')
+          .height('100%')
+          .backgroundColor('#ff2c6bca')
+          .scrollBar(BarState.Off)
+        })
       }
-      .width('100%')
-      .height('100%')
-      .backgroundColor('#ff2c6bca')
-      .scrollBar(BarState.Off)
+      .loop(false)
+      .indicator(
+        Indicator.dot()
+          .left(5)
+          .top(28)
+          .itemWidth(4)
+          .itemHeight(4)
+          .selectedItemWidth(4)
+          .selectedItemHeight(4)
+          .color('#66ffffff')
+          .selectedColor('#ffffffff')
+      )
+
+
 
     }
   }

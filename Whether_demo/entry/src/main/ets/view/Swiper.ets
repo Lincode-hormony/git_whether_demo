@@ -26,10 +26,10 @@ export default struct mySwiper{
       //轮播
       Column(){
         Text('天气预警').fontSize(22).fontColor(Color.White).width('100%').margin({top:8,left:13})
-        if(this.itemInfo==undefined){
-          Text('今天没有预警').fontSize(12).fontColor('#66ffffff').width('100%').margin({top:5,left:13})
-        }else{
+        if(this.itemInfo.text){
           Text(this.itemInfo.text).fontSize(12).fontColor('#66ffffff').width('100%').margin({top:5,left:13})
+        }else{
+          Text('今天没有预警').fontSize(12).fontColor('#66ffffff').width('100%').margin({top:5,left:13})
             .textOverflow({
               overflow:TextOverflow.Ellipsis
             })

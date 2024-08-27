@@ -9,6 +9,8 @@ import HttpUtil3 from '../Util/HttpUtil_city'
 import {location} from '../model/GeoIp'
 import { JSON } from '@kit.ArkTS'
 
+import {CityPassViewModel} from  '../viewmodel/City_Pass_viewmodel'
+
 
 
 
@@ -50,7 +52,8 @@ export default struct CustomDialogComponent {
   }
   confirm: () => void = () => {
   }
-  @Link city:Array<city>
+  @Link city:Array<CityPassViewModel>
+  @State city_pass:CityPassViewModel=new CityPassViewModel()
 
 
   build() {
@@ -128,8 +131,9 @@ export default struct CustomDialogComponent {
                 Text(v.name)
                   .margin(20).width('100%')
                   .onClick(()=>{
-                    //添加城市
-
+                    this.city_pass.name=v.name
+                    this.city_pass.id=v.id
+                    this.city.push(this.city_pass)
                     this.controller?.close()
                   })
               }
