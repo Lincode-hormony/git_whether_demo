@@ -44,7 +44,6 @@ struct City_Rdb {
 
 
   @State city:Array<CityPassViewModel>=[]
-  @State a:string='x'
 
 
   dialogController:CustomDialogController=new CustomDialogController({
@@ -93,7 +92,6 @@ this.Get_preference().then((preference)=>{
           router.back()
         })
         Text('城市管理').margin({left:10}).fontSize(17)
-        Text(this.a)
       }.layoutWeight(1)
 
       Image($r('app.media.qiya')).width(20).backgroundColor(Color.Blue).margin({right:30})
@@ -131,6 +129,7 @@ this.Get_preference().then((preference)=>{
         .borderRadius(10)
 
       }
+      .sharedTransition('ID',{duration:400,curve:Curve.Smooth,delay:100})
       .margin({bottom:15})
       .onClick(()=>{
         router.pushUrl({
@@ -169,6 +168,7 @@ this.Get_preference().then((preference)=>{
           .margin({left:20,right:20})
           .borderRadius(10)
         }
+        .sharedTransition('ID',{duration:400,curve:Curve.Smooth,delay:100})
         .margin({bottom:15})
         .onClick(()=>{
           router.pushUrl({

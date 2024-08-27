@@ -321,5 +321,7 @@ struct Index {
 
 
     }
+    .sharedTransition('ID',{duration:400,curve:Curve.Smooth,delay:100})
+    .backgroundColor('#ff2c6bca')
   }
 }
