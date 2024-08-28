@@ -6,7 +6,7 @@ import {WeatherForecast} from '../model/DataModel'
 
 @Component
 export default struct TimeList{
-  @Link itemInfo:HourlyViewModel
+  @ObjectLink itemInfo:HourlyViewModel
 
   flag=0
 

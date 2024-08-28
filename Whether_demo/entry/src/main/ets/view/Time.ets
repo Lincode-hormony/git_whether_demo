@@ -4,7 +4,7 @@ import {TimeViewModel} from '../viewmodel/Time_viewmodel'
 
 @Component
 export default struct Time{
-  @Link itemInfo:TimeViewModel
+  @ObjectLink itemInfo:TimeViewModel
 
   build() {
     Column(){

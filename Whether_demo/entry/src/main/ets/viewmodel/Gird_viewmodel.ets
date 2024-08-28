@@ -1,3 +1,4 @@
+@Observed
 export class GirdViewModel{
   uvIndex:string=''
   feelsLike:string=''

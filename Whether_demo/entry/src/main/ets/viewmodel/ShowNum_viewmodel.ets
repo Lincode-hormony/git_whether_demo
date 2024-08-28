@@ -1,3 +1,4 @@
+@Observed
 export class ShowNumViewModel{
   temp:string=''
   text:string=''

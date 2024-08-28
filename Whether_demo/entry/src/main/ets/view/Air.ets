@@ -3,7 +3,7 @@ import {AirViewModel} from '../viewmodel/Air_viewmodel'
 
 @Component
 export default struct Airs{
-  @Link itemInfo:AirViewModel
+  @ObjectLink itemInfo:AirViewModel
   // @State a:aqi=new aqi()
   // @State b:health=new health()
   // @State c:advice=new advice()

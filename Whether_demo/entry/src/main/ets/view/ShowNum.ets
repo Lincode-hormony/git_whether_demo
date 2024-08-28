@@ -2,7 +2,7 @@ import {ShowNumViewModel} from '../viewmodel/ShowNum_viewmodel'
 
 @Component
 export default struct ShowNum{
-  @Link itemInfo:ShowNumViewModel
+  @ObjectLink itemInfo:ShowNumViewModel
 
   build() {
     Column(){

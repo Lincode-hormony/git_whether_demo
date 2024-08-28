@@ -37,6 +37,8 @@ import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
 @Entry
 @Component
 struct Index {
+  swiperController: SwiperController = new SwiperController()
+
   @State city_name:string=''
   @State obj:object=router.getParams()
   @State city_Num :string=''
@@ -51,15 +53,19 @@ struct Index {
   @State GirdData:GirdViewModel=new GirdViewModel()
   @State TimeData:TimeViewModel=new TimeViewModel()
 
-  // @State CityData:CityMainViewModel=new CityMainViewModel()
-  //
-  // @State city:Array<CityPassViewModel>=[]
+  @State CityData:Array<CityMainViewModel>=[]
+
+   @State city:Array<CityPassViewModel>=[]
+
+  @State num:number=0
 
 
-   aboutToAppear(): void {
+   onPageShow(): void {
 
 
-     if(this.obj){
+
+
+     if(0){
        // this.city_Num=this.obj['info']
        // HttpUtil3.GetData(this.city_Num).then((v)=>{
        //   this.city_name=v.location[0].name
@@ -110,55 +116,71 @@ struct Index {
        })
      }else {
        this.Get_preference().then((preference:preferences.Preferences)=>{
-         preference.get('city','101010100').then((v)=>{
-            this.city_Num=v as string
+         preference.get('city_data',[]).then((v)=>{
+            this.city=v as Array<CityPassViewModel>
+           console.info('我拿到了'+JSON.stringify(this.city))
 
 
+           for(let i=0;i<this.city.length;i++){
+             let this_city:CityMainViewModel=new CityMainViewModel()
 
              //拿组件温度的数据
-             HttpUtil_now.GetData(this.city_Num).then((now)=>{
-               HttpUtil_daily.GetData(this.city_Num).then((city)=>{
-                 HttpUtil_air.GetData(this.city_Num).then((air)=>{
-                   this.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+             HttpUtil_now.GetData(this.city[i].id).then((now)=>{
+               HttpUtil_daily.GetData(this.city[i].id).then((city)=>{
+                 HttpUtil_air.GetData(this.city[i].id).then((air)=>{
+                   this_city.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
                  })
                })
              })
 
              //拿滚动组件的数据
-             HttpUtil_warn.GetData(this.city_Num).then((warn)=>{
-               this.SwiperData=help.get_Swiper_data(warn.warning[0])
+             HttpUtil_warn.GetData(this.city[i].id).then((warn)=>{
+               this_city.SwiperData=help.get_Swiper_data(warn.warning[0])
              })
 
              //获取每小时天气
-             HttpUtil_hourly.GetData(this.city_Num).then((hourly)=>{
-               this.HourlyData=help.get_TimeList_data(hourly)
+             HttpUtil_hourly.GetData(this.city[i].id).then((hourly)=>{
+               this_city.HourlyData=help.get_TimeList_data(hourly)
              })
 
              //获取每天天气
-             HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-               this.DailyData=help.get_DayList_data(daily)
+             HttpUtil_daily.GetData(this.city[i].id).then((daily)=>{
+               this_city.DailyData=help.get_DayList_data(daily)
              })
 
              //获取空气质量数据
-             HttpUtil_air.GetData(this.city_Num).then((air)=>{
-               this.AirData=help.get_Air_data(air.aqi[0])
+             HttpUtil_air.GetData(this.city[i].id).then((air)=>{
+               this_city.AirData=help.get_Air_data(air.aqi[0])
              })
 
              //拿各种数据
-             HttpUtil_now.GetData(this.city_Num).then((now)=>{
-               HttpUtil_daily.GetData(this.city_Num).then((daily)=>[
-                 this.GirdData=help.get_Gird_data(daily.daily[0],now.now)
+             HttpUtil_now.GetData(this.city[i].id).then((now)=>{
+               HttpUtil_daily.GetData(this.city[i].id).then((daily)=>[
+                 this_city.GirdData=help.get_Gird_data(daily.daily[0],now.now)
                ])
              })
 
              //日出日落
-             HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-               this.TimeData=help.get_Time_data(daily.daily[0])
+             HttpUtil_daily.GetData(this.city[i].id).then((daily)=>{
+               this_city.TimeData=help.get_Time_data(daily.daily[0])
              })
 
-             HttpUtil_city.GetData(this.city_Num).then((v)=>{
-               this.city_name=v.location[0].name
-             })
+             // HttpUtil_city.GetData(this.city_Num).then((v)=>{
+             //   this.city_name=v.location[0].name
+             // })
+
+
+
+             this.CityData.push(this_city)
+             console.info('暂时数据'+i+JSON.stringify(this.CityData))
+
+           }
+
+           console.info('最终数据'+JSON.stringify(this.CityData))
+           console.info('最终数据'+this.CityData.length)
+
+
+
 
 
 
@@ -174,15 +196,15 @@ struct Index {
 
    onPageHide(): void {
      this.Get_preference().then((preference)=>{
-       preference.put('city',this.city_Num)
-       console.info('放入了数据'+this.city_Num)
+       preference.put('city_data',this.city)
+       console.info('放入了数据'+this.city)
        preference.flush()
      })
    }
 
 
    Get_preference(){
-     return preferences.getPreferences(getContext(this),'city')
+     return preferences.getPreferences(getContext(this),'city_data')
    }
 
   build() {
@@ -190,10 +212,18 @@ struct Index {
       //导航栏
       Row(){
         Column(){
-          Text(this.city_name)
-            .fontSize(22)
-            .fontColor(Color.White)
-            .margin({top:15})
+          if (this.city && this.city.length > 0) {
+            Text(this.city[this.num].name)
+              .fontSize(22)
+              .fontColor(Color.White)
+              .margin({top:15})
+          } else {
+            Text('正在加载数据')
+          }
+
+
+
+
           // Image($r('app.media.dingwei'))
           //   .width(14)
           //   .alignSelf(ItemAlign.Start)
@@ -230,49 +260,49 @@ struct Index {
 
 
 
-      Swiper(){
-        ForEach([1,2,3],()=>{
+      Swiper(this.swiperController){
+        ForEach(this.CityData,(value:CityMainViewModel,index:number)=>{
           //List组件
           List(){
             //温度显示
             ListItem(){
-              ShowNum({itemInfo:$ShowNumData})
+              ShowNum({itemInfo:value.ShowNumData})
             }
             .margin({top:60})
 
             //建议
             ListItem(){
-              mySwiper({itemInfo:$SwiperData})
+              mySwiper({itemInfo:value.SwiperData})
             }
             .margin({top:50})
 
             //时间段
             ListItem(){
-              TimeList({itemInfo:$HourlyData})
+              TimeList({itemInfo:value.HourlyData})
             }
             .margin({top:20})
 
             //未来十五天
             ListItem(){
-              DayList({itemInfo:$DailyData})
+              DayList({itemInfo:value.DailyData})
             }
             .margin({top:20})
 
             //空气质量
             ListItem(){
-              Air({itemInfo:$AirData})
+              Air({itemInfo:value.AirData})
             }
             .margin({top:20})
 
             //六张小卡片
             ListItem(){
-              myGird({itemInfo:$GirdData})
+              myGird({itemInfo:value.GirdData})
             }
             .margin({top:20})
 
             //日出日落
             ListItem(){
-              Time({itemInfo:$TimeData})
+              Time({itemInfo:value.TimeData})
             }
             .margin({top:20})
 
@@ -317,6 +347,9 @@ struct Index {
           .color('#66ffffff')
           .selectedColor('#ffffffff')
       )
+      .onChange((index)=>{
+        this.num=index
+      })
 
 
 

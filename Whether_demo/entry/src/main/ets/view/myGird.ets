@@ -18,7 +18,7 @@ function my_gird(media:string,title:string,text:string){
 
 @Component
 export default struct Air{
-  @Link itemInfo:GirdViewModel
+  @ObjectLink itemInfo:GirdViewModel
   // @State a:Array<DailyForecast>=[]
   // @State b:DailyForecast=new DailyForecast()
   // @State c:now=new now()

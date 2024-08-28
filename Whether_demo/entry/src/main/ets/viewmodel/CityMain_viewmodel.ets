@@ -7,11 +7,11 @@ import {GirdViewModel} from '../viewmodel/Gird_viewmodel'
 import {TimeViewModel} from '../viewmodel/Time_viewmodel'
 
 export class CityMainViewModel{
-   ShowNumData:Array<ShowNumViewModel>=[]
-   SwiperData:Array<SwiperViewModel>=[]
-   HourlyData:Array<HourlyViewModel>=[]
-   DailyData:Array<DailyViewModel>=[]
-   AirData:Array<AirViewModel>=[]
-   GirdData:Array<GirdViewModel>=[]
-   TimeData:Array<TimeViewModel>=[]
+   ShowNumData:ShowNumViewModel=new ShowNumViewModel()
+   SwiperData:SwiperViewModel=new SwiperViewModel()
+   HourlyData:HourlyViewModel=new HourlyViewModel()
+   DailyData:DailyViewModel=new DailyViewModel()
+   AirData:AirViewModel=new AirViewModel()
+   GirdData:GirdViewModel=new GirdViewModel()
+   TimeData:TimeViewModel=new TimeViewModel()
 }

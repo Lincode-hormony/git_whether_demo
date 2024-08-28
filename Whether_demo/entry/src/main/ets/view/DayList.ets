@@ -4,7 +4,7 @@ import {DailyForecast} from '../model/DailyModel'
 
 @Component
 export default struct DayList{
-  @Link itemInfo:DailyViewModel
+  @ObjectLink itemInfo:DailyViewModel
  // @State a:Array<DailyForecast>=[]
 
 //   aboutToAppear(): void {

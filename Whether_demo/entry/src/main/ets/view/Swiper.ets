@@ -17,7 +17,7 @@ function my_warn(title:string,text:string){
 
 @Component
 export default struct mySwiper{
-  @Link itemInfo:SwiperViewModel
+  @ObjectLink itemInfo:SwiperViewModel
   flag=0
 
 
