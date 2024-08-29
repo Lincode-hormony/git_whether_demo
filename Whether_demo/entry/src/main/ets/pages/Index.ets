@@ -30,6 +30,7 @@ import HttpUtil_daily from '../Util/HttpUtil_Daily'
 import HttpUtil_air from '../Util/HttpUtil_Air'
 import HttpUtil_warn from '../Util/HttpUtil_warn'
 import HttpUtil_hourly from '../Util/HttpUtil_hourly'
+import HttpUtil_local from '../Util/HttpUtil_Local'
 
 import help from '../Util/Help'
 import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
@@ -59,135 +60,192 @@ struct Index {
 
   @State num:number=0
 
+  @State local_city:string=''
+  @State local_id:string=''
+  @State local_cityData:CityMainViewModel=new CityMainViewModel()
+
 
    onPageShow(): void {
 
 
 
+     //
+     // if(0){
+     //   // this.city_Num=this.obj['info']
+     //   // HttpUtil3.GetData(this.city_Num).then((v)=>{
+     //   //   this.city_name=v.location[0].name
+     //   // })
+     //   this.city_Num=this.obj['info']
+     //   HttpUtil_now.GetData(this.city_Num).then((now)=>{
+     //     HttpUtil_daily.GetData(this.city_Num).then((city)=>{
+     //       HttpUtil_air.GetData(this.city_Num).then((air)=>{
+     //         this.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+     //       })
+     //     })
+     //   })
+     //
+     //   //拿滚动组件的数据
+     //   HttpUtil_warn.GetData(this.city_Num).then((warn)=>{
+     //     this.SwiperData=help.get_Swiper_data(warn.warning[0])
+     //   })
+     //
+     //   //获取每小时天气
+     //   HttpUtil_hourly.GetData(this.city_Num).then((hourly)=>{
+     //     this.HourlyData=help.get_TimeList_data(hourly)
+     //   })
+     //
+     //   //获取每天天气
+     //   HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
+     //     this.DailyData=help.get_DayList_data(daily)
+     //   })
+     //
+     //   //获取空气质量数据
+     //   HttpUtil_air.GetData(this.city_Num).then((air)=>{
+     //     this.AirData=help.get_Air_data(air.aqi[0])
+     //   })
+     //
+     //   //拿各种数据
+     //   HttpUtil_now.GetData(this.city_Num).then((now)=>{
+     //     HttpUtil_daily.GetData(this.city_Num).then((daily)=>[
+     //       this.GirdData=help.get_Gird_data(daily.daily[0],now.now)
+     //     ])
+     //   })
+     //
+     //   //日出日落
+     //   HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
+     //     this.TimeData=help.get_Time_data(daily.daily[0])
+     //   })
+     //
+     //   HttpUtil_city.GetData(this.city_Num).then((v)=>{
+     //     this.city_name=v.location[0].name
+     //   })
+     // }else {
 
-     if(0){
-       // this.city_Num=this.obj['info']
-       // HttpUtil3.GetData(this.city_Num).then((v)=>{
-       //   this.city_name=v.location[0].name
-       // })
-       this.city_Num=this.obj['info']
-       HttpUtil_now.GetData(this.city_Num).then((now)=>{
-         HttpUtil_daily.GetData(this.city_Num).then((city)=>{
-           HttpUtil_air.GetData(this.city_Num).then((air)=>{
-             this.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+       HttpUtil_local.GetData().then((v)=>{
+         this.local_city=v.city
+         HttpUtil_city.GetData(this.local_city).then((v)=>{
+           this.local_id=v.location[0].id
+
+           HttpUtil_now.GetData(this.local_id).then((now)=>{
+             HttpUtil_daily.GetData(this.local_id).then((city)=>{
+               HttpUtil_air.GetData(this.local_id).then((air)=>{
+                 this.local_cityData.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+               })
+             })
+           })
+
+           //拿滚动组件的数据
+           HttpUtil_warn.GetData(this.local_id).then((warn)=>{
+             this.local_cityData.SwiperData=help.get_Swiper_data(warn.warning[0])
+           })
+
+           //获取每小时天气
+           HttpUtil_hourly.GetData(this.local_id).then((hourly)=>{
+             this.local_cityData.HourlyData=help.get_TimeList_data(hourly)
+           })
+
+           //获取每天天气
+           HttpUtil_daily.GetData(this.local_id).then((daily)=>{
+             this.local_cityData.DailyData=help.get_DayList_data(daily)
+           })
+
+           //获取空气质量数据
+           HttpUtil_air.GetData(this.local_id).then((air)=>{
+             this.local_cityData.AirData=help.get_Air_data(air.aqi[0])
+           })
+
+           //拿各种数据
+           HttpUtil_now.GetData(this.local_id).then((now)=>{
+             HttpUtil_daily.GetData(this.local_id).then((daily)=>[
+               this.local_cityData.GirdData=help.get_Gird_data(daily.daily[0],now.now)
+             ])
+           })
+
+           //日出日落
+           HttpUtil_daily.GetData(this.local_id).then((daily)=>{
+             this.local_cityData.TimeData=help.get_Time_data(daily.daily[0])
            })
          })
        })
 
-       //拿滚动组件的数据
-       HttpUtil_warn.GetData(this.city_Num).then((warn)=>{
-         this.SwiperData=help.get_Swiper_data(warn.warning[0])
-       })
-
-       //获取每小时天气
-       HttpUtil_hourly.GetData(this.city_Num).then((hourly)=>{
-         this.HourlyData=help.get_TimeList_data(hourly)
-       })
-
-       //获取每天天气
-       HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-         this.DailyData=help.get_DayList_data(daily)
-       })
-
-       //获取空气质量数据
-       HttpUtil_air.GetData(this.city_Num).then((air)=>{
-         this.AirData=help.get_Air_data(air.aqi[0])
-       })
-
-       //拿各种数据
-       HttpUtil_now.GetData(this.city_Num).then((now)=>{
-         HttpUtil_daily.GetData(this.city_Num).then((daily)=>[
-           this.GirdData=help.get_Gird_data(daily.daily[0],now.now)
-         ])
-       })
-
-       //日出日落
-       HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-         this.TimeData=help.get_Time_data(daily.daily[0])
-       })
-
-       HttpUtil_city.GetData(this.city_Num).then((v)=>{
-         this.city_name=v.location[0].name
-       })
-     }else {
-       this.Get_preference().then((preference:preferences.Preferences)=>{
-         preference.get('city_data',[]).then((v)=>{
-            this.city=v as Array<CityPassViewModel>
-           console.info('我拿到了'+JSON.stringify(this.city))
 
 
-           for(let i=0;i<this.city.length;i++){
-             let this_city:CityMainViewModel=new CityMainViewModel()
+     this.Get_preference().then((preference:preferences.Preferences)=>{
+             preference.get('city_data',this.city).then((v)=>{
+               this.city=v as Array<CityPassViewModel>
+               console.info('我真正拿到了'+JSON.stringify(this.city))
 
-             //拿组件温度的数据
-             HttpUtil_now.GetData(this.city[i].id).then((now)=>{
-               HttpUtil_daily.GetData(this.city[i].id).then((city)=>{
-                 HttpUtil_air.GetData(this.city[i].id).then((air)=>{
-                   this_city.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+
+               for(let i=0;i<this.city.length;i++){
+                 let this_city:CityMainViewModel=new CityMainViewModel()
+
+                 //拿组件温度的数据
+                 HttpUtil_now.GetData(this.city[i].id).then((now)=>{
+                   HttpUtil_daily.GetData(this.city[i].id).then((city)=>{
+                     HttpUtil_air.GetData(this.city[i].id).then((air)=>{
+                       this_city.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+                     })
+                   })
                  })
-               })
+
+                 //拿滚动组件的数据
+                 HttpUtil_warn.GetData(this.city[i].id).then((warn)=>{
+                   this_city.SwiperData=help.get_Swiper_data(warn.warning[0])
+                 })
+
+                 //获取每小时天气
+                 HttpUtil_hourly.GetData(this.city[i].id).then((hourly)=>{
+                   this_city.HourlyData=help.get_TimeList_data(hourly)
+                 })
+
+                 //获取每天天气
+                 HttpUtil_daily.GetData(this.city[i].id).then((daily)=>{
+                   this_city.DailyData=help.get_DayList_data(daily)
+                 })
+
+                 //获取空气质量数据
+                 HttpUtil_air.GetData(this.city[i].id).then((air)=>{
+                   this_city.AirData=help.get_Air_data(air.aqi[0])
+                 })
+
+                 //拿各种数据
+                 HttpUtil_now.GetData(this.city[i].id).then((now)=>{
+                   HttpUtil_daily.GetData(this.city[i].id).then((daily)=>[
+                     this_city.GirdData=help.get_Gird_data(daily.daily[0],now.now)
+                   ])
+                 })
+
+                 //日出日落
+                 HttpUtil_daily.GetData(this.city[i].id).then((daily)=>{
+                   this_city.TimeData=help.get_Time_data(daily.daily[0])
+                 })
+
+                 // HttpUtil_city.GetData(this.city_Num).then((v)=>{
+                 //   this.city_name=v.location[0].name
+                 // })
+
+
+
+                 this.CityData.push(this_city)
+                 console.info('暂时数据'+i+JSON.stringify(this.CityData))
+
+               }
+
+               console.info('最终数据'+JSON.stringify(this.CityData))
+               console.info('最终数据'+this.CityData.length)
+
+
+
+
+
+
+
              })
-
-             //拿滚动组件的数据
-             HttpUtil_warn.GetData(this.city[i].id).then((warn)=>{
-               this_city.SwiperData=help.get_Swiper_data(warn.warning[0])
-             })
-
-             //获取每小时天气
-             HttpUtil_hourly.GetData(this.city[i].id).then((hourly)=>{
-               this_city.HourlyData=help.get_TimeList_data(hourly)
-             })
-
-             //获取每天天气
-             HttpUtil_daily.GetData(this.city[i].id).then((daily)=>{
-               this_city.DailyData=help.get_DayList_data(daily)
-             })
-
-             //获取空气质量数据
-             HttpUtil_air.GetData(this.city[i].id).then((air)=>{
-               this_city.AirData=help.get_Air_data(air.aqi[0])
-             })
-
-             //拿各种数据
-             HttpUtil_now.GetData(this.city[i].id).then((now)=>{
-               HttpUtil_daily.GetData(this.city[i].id).then((daily)=>[
-                 this_city.GirdData=help.get_Gird_data(daily.daily[0],now.now)
-               ])
-             })
-
-             //日出日落
-             HttpUtil_daily.GetData(this.city[i].id).then((daily)=>{
-               this_city.TimeData=help.get_Time_data(daily.daily[0])
-             })
-
-             // HttpUtil_city.GetData(this.city_Num).then((v)=>{
-             //   this.city_name=v.location[0].name
-             // })
-
-
-
-             this.CityData.push(this_city)
-             console.info('暂时数据'+i+JSON.stringify(this.CityData))
-
-           }
-
-           console.info('最终数据'+JSON.stringify(this.CityData))
-           console.info('最终数据'+this.CityData.length)
+           })
 
 
 
 
-
-
-
-         })
-       })
-     }
 
 
 
@@ -212,13 +270,24 @@ struct Index {
       //导航栏
       Row(){
         Column(){
-          if (this.city && this.city.length > 0) {
-            Text(this.city[this.num].name)
+          if (this.city.length==0) {
+            Text(this.local_city)
               .fontSize(22)
               .fontColor(Color.White)
               .margin({top:15})
           } else {
-            Text('正在加载数据')
+            if(this.num==0){
+              Text(this.local_city)
+                .fontSize(22)
+                .fontColor(Color.White)
+                .margin({top:15})
+            }else if(this.num>0){
+              Text(this.city[this.num-1].name)
+                .fontSize(22)
+                .fontColor(Color.White)
+                .margin({top:15})
+            }
+
           }
 
 
@@ -261,6 +330,72 @@ struct Index {
 
 
       Swiper(this.swiperController){
+
+        List() {
+          //温度显示
+          ListItem() {
+            ShowNum({ itemInfo: this.local_cityData.ShowNumData })
+          }
+          .margin({ top: 60 })
+
+          //建议
+          ListItem() {
+            mySwiper({ itemInfo: this.local_cityData.SwiperData })
+          }
+          .margin({ top: 50 })
+
+          //时间段
+          ListItem() {
+            TimeList({ itemInfo: this.local_cityData.HourlyData })
+          }
+          .margin({ top: 20 })
+
+          //未来十五天
+          ListItem() {
+            DayList({ itemInfo: this.local_cityData.DailyData })
+          }
+          .margin({ top: 20 })
+
+          //空气质量
+          ListItem() {
+            Air({ itemInfo: this.local_cityData.AirData })
+          }
+          .margin({ top: 20 })
+
+          //六张小卡片
+          ListItem() {
+            myGird({ itemInfo: this.local_cityData.GirdData })
+          }
+          .margin({ top: 20 })
+
+          //日出日落
+          ListItem() {
+            Time({ itemInfo: this.local_cityData.TimeData })
+          }
+          .margin({ top: 20 })
+
+          //央视预报
+          ListItem() {
+            myVideo()
+          }
+          .margin({ top: 20 })
+
+          //生活建议
+          ListItem() {
+            Advice()
+          }
+          .margin({ top: 20 })
+
+          ListItem() {
+            Text('OpenHarmony--天气预报')
+              .textAlign(TextAlign.Center)
+              .width('100%')
+              .fontColor('#b3ffffff')
+              .fontWeight(800)
+          }
+          .margin({ top: 20 })
+        }
+
         ForEach(this.CityData,(value:CityMainViewModel,index:number)=>{
           //List组件
           List(){

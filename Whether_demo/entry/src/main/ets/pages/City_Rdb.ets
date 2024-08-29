@@ -4,6 +4,7 @@ import {city} from '../model/CityModel'
 import { preferences } from '@kit.ArkData'
 import HttpUtil_city from '../Util/HttpUtil_city'
 import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
+import HttpUtil_local from '../Util/HttpUtil_Local'
 
 
 //
@@ -44,6 +45,7 @@ struct City_Rdb {
 
 
   @State city:Array<CityPassViewModel>=[]
+  @State local_city:string=''
 
 
   dialogController:CustomDialogController=new CustomDialogController({
@@ -61,6 +63,9 @@ struct City_Rdb {
 
 
   aboutToAppear(): void {
+    HttpUtil_local.GetData().then((v)=>{
+      this.local_city=v.city
+    })
 this.Get_preference().then((preference)=>{
   preference.get('city_data',[]).then((v)=>{
     console.info('拿了数据'+v)
@@ -106,7 +111,7 @@ this.Get_preference().then((preference)=>{
       ListItem() {
         Column() {
           Row() {
-            Text('北京').margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
+            Text(this.local_city).margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
             Text('34°').margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
           }
           .width('100%')
