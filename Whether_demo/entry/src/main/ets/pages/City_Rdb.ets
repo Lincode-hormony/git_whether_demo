@@ -5,47 +5,62 @@ import { preferences } from '@kit.ArkData'
 import HttpUtil_city from '../Util/HttpUtil_city'
 import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
 import HttpUtil_local from '../Util/HttpUtil_Local'
+import help from '../Util/Help'
+import {ShowNumViewModel} from '../viewmodel/ShowNum_viewmodel'
+import HttpUtil_now from '../Util/HttpUtil_now'
+import HttpUtil_daily from '../Util/HttpUtil_Daily'
+import HttpUtil_air from '../Util/HttpUtil_Air'
 
-
-//
-// @Builder
-// function  card(){
-//   Column(){
-//     Row(){
-//       Text('长安区').margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
-//       Text('26°').margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
-//     }
-//     .width('100%')
-//     .justifyContent(FlexAlign.SpaceBetween)
-//
-//     Row(){
-//       Text('空气优  20').margin(15).fontColor('#66ffffff').fontSize(16).fontWeight(300)
-//       Text('多云').margin(15).fontColor(Color.White).fontSize(16).fontWeight(500)
-//     }
-//     .width('100%')
-//     .justifyContent(FlexAlign.SpaceBetween)
-//     .position({x:0,y:45})
-//     //.backgroundColor(Color.Blue)
-//
-//   }
-//   .backgroundColor(Color.Orange)
-//   .width(315)
-//   .height(95)
-//   .margin({left:20,right:20})
-//   .borderRadius(10)
-// }
-
-
-
+import {card_list} from '../view/Card_list'
+import { city_data } from '../model/GeoIp'
 
 
 @Entry
 @Component
 struct City_Rdb {
+  delete_card(name:string){
+    console.info('传入的城市'+name)
+  for(let i=0;i<this.city.length;i++){
+    if(name==this.city[i].name){
+      this.city.splice(i,1)
+      console.info('已删除数据'+JSON.stringify(this.city))
+      return
+    }
+    console.info('已删除数据'+JSON.stringify(this.city))
+  }
+
+}
+
+  @Builder
+  delButton(name:string) {
+    Button('×')
+      .fontSize(20)
+      .type(ButtonType.Circle)
+      .align(Alignment.Center)
+      .margin({ right: 20 })
+      .backgroundColor(Color.Red)
+      .onClick(() => {
+        if(name=''){
+          AlertDialog.show({
+            message:'没有数据'
+          })
+        }else{
+          //调用删除接口
+          this.delete_card(name)
+          //重新加载数据
+          //this.aboutToAppear()
+        }
+
+      })
+  }
 
 
   @State city:Array<CityPassViewModel>=[]
   @State local_city:string=''
+  @State local_id:string=''
+  @State local_card:ShowNumViewModel=new ShowNumViewModel()
+
+  @State card_data:Array<ShowNumViewModel>=[]
 
 
   dialogController:CustomDialogController=new CustomDialogController({
@@ -65,6 +80,34 @@ struct City_Rdb {
   aboutToAppear(): void {
     HttpUtil_local.GetData().then((v)=>{
       this.local_city=v.city
+      HttpUtil_city.GetData(this.local_city).then((v)=>{
+        this.local_id=v.location[0].id
+
+        HttpUtil_now.GetData(this.local_id).then((now)=>{
+          HttpUtil_daily.GetData(this.local_id).then((city)=>{
+            HttpUtil_air.GetData(this.local_id).then((air)=>{
+              this.local_card=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+            })
+          })
+        })
+
+        for (let i=0;i<this.city.length;i++){
+          let this_data:ShowNumViewModel=new ShowNumViewModel()
+          HttpUtil_now.GetData(this.city[i].id).then((now)=>{
+            HttpUtil_daily.GetData(this.city[i].id).then((city)=>{
+              HttpUtil_air.GetData(this.city[i].id).then((air)=>{
+                this_data=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
+                console.info(`卡片${i}`+JSON.stringify(this_data))
+                this.card_data.push(this_data)
+              })
+            })
+          })
+          //console.info(`卡片${i}`+JSON.stringify(this_data))
+
+        }
+        console.info('卡片'+JSON.stringify(this.card_data))
+
+      })
     })
 this.Get_preference().then((preference)=>{
   preference.get('city_data',[]).then((v)=>{
@@ -99,7 +142,7 @@ this.Get_preference().then((preference)=>{
         Text('城市管理').margin({left:10}).fontSize(17)
       }.layoutWeight(1)
 
-      Image($r('app.media.qiya')).width(20).backgroundColor(Color.Blue).margin({right:30})
+      Image($r('app.media.bianji')).width(20).margin({right:30})
     }
     //.backgroundColor(Color.Blue)
     .width('100%')
@@ -112,14 +155,14 @@ this.Get_preference().then((preference)=>{
         Column() {
           Row() {
             Text(this.local_city).margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
-            Text('34°').margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
+            Text(this.local_card.temp).margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
           }
           .width('100%')
           .justifyContent(FlexAlign.SpaceBetween)
 
           Row() {
-            Text('空气优  20').margin(15).fontColor('#66ffffff').fontSize(16).fontWeight(300)
-            Text('多云').margin(15).fontColor(Color.White).fontSize(16).fontWeight(500)
+            Text('空气'+this.local_card.category+'   '+this.local_card.value).margin(15).fontColor('#66ffffff').fontSize(16).fontWeight(300)
+            Text(this.local_card.text).margin(15).fontColor(Color.White).fontSize(16).fontWeight(500)
           }
           .width('100%')
           .justifyContent(FlexAlign.SpaceBetween)
@@ -147,43 +190,18 @@ this.Get_preference().then((preference)=>{
       })
 
 
-      ForEach(this.city,(value:CityPassViewModel)=>{
+      ForEach(this.card_data,(value:ShowNumViewModel,index:number)=>{
         ListItem(){
-          Column(){
-            Row(){
-              Text(value.name).margin(15).fontColor(Color.White).fontSize(25).fontWeight(300)
-              Text('sss').margin(15).fontColor(Color.White).fontSize(25).fontWeight(500)
-            }
-            .width('100%')
-            .justifyContent(FlexAlign.SpaceBetween)
-
-            Row(){
-              Text(`空气${'sss'}`+'    '+'sss'?.toString()).margin(15).fontColor('#66ffffff').fontSize(16).fontWeight(300)
-              Text('sss').margin(15).fontColor(Color.White).fontSize(16).fontWeight(500)
-            }
-            .width('100%')
-            .justifyContent(FlexAlign.SpaceBetween)
-            .position({x:0,y:45})
-            //.backgroundColor(Color.Blue)
-
-          }
-          .backgroundColor('#ff2c6bca')
-          .width(315)
-          .height(95)
-          .margin({left:20,right:20})
-          .borderRadius(10)
+          card_list({city:$city,card_data:value,index:index})
         }
         .sharedTransition('ID',{duration:400,curve:Curve.Smooth,delay:100})
         .margin({bottom:15})
         .onClick(()=>{
           router.pushUrl({
             url:'pages/Index',
-            params:{
-              info:value.id
-            }
-
           })
         })
+        .swipeAction({ end: this.delButton(this.city && this.city.length > 0 && index >= 0 && index < this.city.length && this.city[index].name?this.city[index].name:'') })
       })
     }
     .margin({top:50})

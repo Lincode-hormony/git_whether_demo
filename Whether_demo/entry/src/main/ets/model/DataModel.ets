@@ -1,9 +1,9 @@
 @Observed export class  WeatherForecast {
   fxTime: string='20040527'
-  temp: number=2
-  icon: string='333'
+  temp: number=0
+  icon: string=''
   text: string=''
-  wind360: number=3
+  wind360: number=0
   windDir: string=''
   windScale: string=''
   windSpeed: number=3

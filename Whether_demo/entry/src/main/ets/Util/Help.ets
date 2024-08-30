@@ -75,6 +75,10 @@ class Help{
     result.down=daily_model.sunset
     return result
   }
+
+  get_City_card(){
+
+  }
 }
 
 let x:Help=new Help()
