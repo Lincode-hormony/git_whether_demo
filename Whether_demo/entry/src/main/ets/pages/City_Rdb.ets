@@ -1,6 +1,6 @@
 import { router } from '@kit.ArkUI'
 import CustomDialogComponent from '../view/Dialog_Add'
-import {city} from '../model/CityModel'
+
 import { preferences } from '@kit.ArkData'
 import HttpUtil_city from '../Util/HttpUtil_city'
 import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
@@ -12,27 +12,16 @@ import HttpUtil_daily from '../Util/HttpUtil_Daily'
 import HttpUtil_air from '../Util/HttpUtil_Air'
 
 import {card_list} from '../view/Card_list'
-import { city_data } from '../model/GeoIp'
+
 
 
 @Entry
 @Component
 struct City_Rdb {
-  delete_card(name:string){
-    console.info('传入的城市'+name)
-  for(let i=0;i<this.city.length;i++){
-    if(name==this.city[i].name){
-      this.city.splice(i,1)
-      console.info('已删除数据'+JSON.stringify(this.city))
-      return
-    }
-    console.info('已删除数据'+JSON.stringify(this.city))
-  }
 
-}
 
   @Builder
-  delButton(name:string) {
+  delButton(index:number) {
     Button('×')
       .fontSize(20)
       .type(ButtonType.Circle)
@@ -40,17 +29,8 @@ struct City_Rdb {
       .margin({ right: 20 })
       .backgroundColor(Color.Red)
       .onClick(() => {
-        if(name=''){
-          AlertDialog.show({
-            message:'没有数据'
-          })
-        }else{
-          //调用删除接口
-          this.delete_card(name)
-          //重新加载数据
-          //this.aboutToAppear()
-        }
-
+        this.card_data.splice(index,1)
+        this.city.splice(index,1)
       })
   }
 
@@ -66,7 +46,8 @@ struct City_Rdb {
   dialogController:CustomDialogController=new CustomDialogController({
     builder: CustomDialogComponent({
       get_data:()=>{
-
+        this.aboutToAppear()
+        console.info('刷新')
       },
       confirm:()=>{},
       city:$city
@@ -113,6 +94,7 @@ this.Get_preference().then((preference)=>{
   preference.get('city_data',[]).then((v)=>{
     console.info('拿了数据'+v)
     this.city=v as CityPassViewModel[]
+
   })
 })
 
@@ -201,7 +183,7 @@ this.Get_preference().then((preference)=>{
             url:'pages/Index',
           })
         })
-        .swipeAction({ end: this.delButton(this.city && this.city.length > 0 && index >= 0 && index < this.city.length && this.city[index].name?this.city[index].name:'') })
+        .swipeAction({ end: {builder:this.delButton(index)} })
       })
     }
     .margin({top:50})

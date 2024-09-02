@@ -135,6 +135,7 @@ export default struct CustomDialogComponent {
                     this.city_pass.id=v.id
                     this.city.push(this.city_pass)
                     this.controller?.close()
+                    //this.get_data()
                   })
               }
             })

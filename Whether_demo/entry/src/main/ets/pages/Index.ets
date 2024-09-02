@@ -1,4 +1,3 @@
-//组件显示
 import ShowNum from '../view/ShowNum'
 import mySwiper from '../view/Swiper'
 import TimeList from '../view/TimeList'
@@ -12,9 +11,6 @@ import  myVideo from '../view/myVidio'
 import { router } from '@kit.ArkUI'
 import preferences from '@ohos.data.preferences'
 
-import HttpUtil_city from '../Util/HttpUtil_city'
-import {location} from '../model/GeoIp'
-
 import {SwiperViewModel} from '../viewmodel/Swiper_viewmodel'
 import {ShowNumViewModel} from '../viewmodel/ShowNum_viewmodel'
 import {HourlyViewModel} from '../viewmodel/Hourly_viewmodel'
@@ -23,8 +19,9 @@ import {AirViewModel} from '../viewmodel/Air_viewmodel'
 import {GirdViewModel} from '../viewmodel/Gird_viewmodel'
 import {TimeViewModel} from '../viewmodel/Time_viewmodel'
 import {CityMainViewModel} from '../viewmodel/CityMain_viewmodel'
+import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
 
-
+import HttpUtil_city from '../Util/HttpUtil_city'
 import HttpUtil_now from '../Util/HttpUtil_now'
 import HttpUtil_daily from '../Util/HttpUtil_Daily'
 import HttpUtil_air from '../Util/HttpUtil_Air'
@@ -33,18 +30,12 @@ import HttpUtil_hourly from '../Util/HttpUtil_hourly'
 import HttpUtil_local from '../Util/HttpUtil_Local'
 
 import help from '../Util/Help'
-import {CityPassViewModel} from '../viewmodel/City_Pass_viewmodel'
+
 
 @Entry
 @Component
 struct Index {
   swiperController: SwiperController = new SwiperController()
-
-  @State city_name:string=''
-  @State obj:object=router.getParams()
-  @State city_Num :string=''
-  @State k:location=new location()
-
 
   @State ShowNumData:ShowNumViewModel=new ShowNumViewModel()
   @State SwiperData:SwiperViewModel=new SwiperViewModel()
@@ -55,9 +46,7 @@ struct Index {
   @State TimeData:TimeViewModel=new TimeViewModel()
 
   @State CityData:Array<CityMainViewModel>=[]
-
-   @State city:Array<CityPassViewModel>=[]
-
+  @State city:Array<CityPassViewModel>=[]
   @State num:number=0
 
   @State local_city:string=''
@@ -67,60 +56,7 @@ struct Index {
 
    onPageShow(): void {
 
-
-
-     //
-     // if(0){
-     //   // this.city_Num=this.obj['info']
-     //   // HttpUtil3.GetData(this.city_Num).then((v)=>{
-     //   //   this.city_name=v.location[0].name
-     //   // })
-     //   this.city_Num=this.obj['info']
-     //   HttpUtil_now.GetData(this.city_Num).then((now)=>{
-     //     HttpUtil_daily.GetData(this.city_Num).then((city)=>{
-     //       HttpUtil_air.GetData(this.city_Num).then((air)=>{
-     //         this.ShowNumData=help.get_ShowNum_data(now.now,city.daily[0],air.aqi[0])
-     //       })
-     //     })
-     //   })
-     //
-     //   //拿滚动组件的数据
-     //   HttpUtil_warn.GetData(this.city_Num).then((warn)=>{
-     //     this.SwiperData=help.get_Swiper_data(warn.warning[0])
-     //   })
-     //
-     //   //获取每小时天气
-     //   HttpUtil_hourly.GetData(this.city_Num).then((hourly)=>{
-     //     this.HourlyData=help.get_TimeList_data(hourly)
-     //   })
-     //
-     //   //获取每天天气
-     //   HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-     //     this.DailyData=help.get_DayList_data(daily)
-     //   })
-     //
-     //   //获取空气质量数据
-     //   HttpUtil_air.GetData(this.city_Num).then((air)=>{
-     //     this.AirData=help.get_Air_data(air.aqi[0])
-     //   })
-     //
-     //   //拿各种数据
-     //   HttpUtil_now.GetData(this.city_Num).then((now)=>{
-     //     HttpUtil_daily.GetData(this.city_Num).then((daily)=>[
-     //       this.GirdData=help.get_Gird_data(daily.daily[0],now.now)
-     //     ])
-     //   })
-     //
-     //   //日出日落
-     //   HttpUtil_daily.GetData(this.city_Num).then((daily)=>{
-     //     this.TimeData=help.get_Time_data(daily.daily[0])
-     //   })
-     //
-     //   HttpUtil_city.GetData(this.city_Num).then((v)=>{
-     //     this.city_name=v.location[0].name
-     //   })
-     // }else {
-
+    //请求本地城市数据
        HttpUtil_local.GetData().then((v)=>{
          this.local_city=v.city
          HttpUtil_city.GetData(this.local_city).then((v)=>{
@@ -168,8 +104,7 @@ struct Index {
          })
        })
 
-
-
+    //请求城市列表数据
      this.Get_preference().then((preference:preferences.Preferences)=>{
              preference.get('city_data',this.city).then((v)=>{
                this.city=v as Array<CityPassViewModel>
@@ -224,9 +159,12 @@ struct Index {
                  //   this.city_name=v.location[0].name
                  // })
 
+                 if(this_city.ShowNumData.temp==''){
 
+                 }else{
+                   this.CityData.push(this_city)
+                 }
 
-                 this.CityData.push(this_city)
                  console.info('暂时数据'+i+JSON.stringify(this.CityData))
 
                }
@@ -236,30 +174,18 @@ struct Index {
 
 
 
-
-
-
-
              })
            })
-
-
-
-
-
-
-
-
    }
 
    onPageHide(): void {
+    //数据持久化
      this.Get_preference().then((preference)=>{
        preference.put('city_data',this.city)
        console.info('放入了数据'+this.city)
        preference.flush()
      })
    }
-
 
    Get_preference(){
      return preferences.getPreferences(getContext(this),'city_data')
@@ -300,15 +226,9 @@ struct Index {
         }
         .width(80)
         .height(50)
-        //.backgroundColor(Color.Pink)
-
 
         Row({space:20}){
           Image($r('app.media.yifu')).width(20)
-            .onClick(()=>{
-              this.city_Num='101300103'
-              AlertDialog.show({message:'修改成功：'+this.city_Num})
-            })
           Image($r('app.media.wenjian')).width(20)
             .onClick(()=>{
               router.pushUrl({url:'pages/City_Rdb'})
@@ -331,6 +251,7 @@ struct Index {
 
       Swiper(this.swiperController){
 
+        //本地城市信息渲染
         List() {
           //温度显示
           ListItem() {
@@ -396,7 +317,9 @@ struct Index {
           .margin({ top: 20 })
         }
 
-        ForEach(this.CityData,(value:CityMainViewModel,index:number)=>{
+
+        //列表城市信息渲染
+        ForEach(this.CityData,(value:CityMainViewModel)=>{
           //List组件
           List(){
             //温度显示
