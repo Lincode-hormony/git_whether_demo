@@ -53,8 +53,13 @@ struct Index {
   @State local_id:string=''
   @State local_cityData:CityMainViewModel=new CityMainViewModel()
 
+  aboutToAppear(): void {
+
+  }
+
 
    onPageShow(): void {
+    console.info('数据检查：'+console.info(this.CityData.length.toString()))
 
     //请求本地城市数据
        HttpUtil_local.GetData().then((v)=>{
@@ -111,6 +116,8 @@ struct Index {
                console.info('我真正拿到了'+JSON.stringify(this.city))
 
 
+
+
                for(let i=0;i<this.city.length;i++){
                  let this_city:CityMainViewModel=new CityMainViewModel()
 
@@ -159,11 +166,7 @@ struct Index {
                  //   this.city_name=v.location[0].name
                  // })
 
-                 if(this_city.ShowNumData.temp==''){
-
-                 }else{
-                   this.CityData.push(this_city)
-                 }
+                 this.CityData.push(this_city)
 
                  console.info('暂时数据'+i+JSON.stringify(this.CityData))
 
@@ -185,6 +188,8 @@ struct Index {
        console.info('放入了数据'+this.city)
        preference.flush()
      })
+
+     this.CityData=[]
    }
 
    Get_preference(){
@@ -207,8 +212,13 @@ struct Index {
                 .fontSize(22)
                 .fontColor(Color.White)
                 .margin({top:15})
-            }else if(this.num>0){
+            }else if(this.num>0 && this.city){
               Text(this.city[this.num-1].name)
+                .fontSize(22)
+                .fontColor(Color.White)
+                .margin({top:15})
+            }else {
+              Text('aaa')
                 .fontSize(22)
                 .fontColor(Color.White)
                 .margin({top:15})
