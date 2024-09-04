@@ -46,8 +46,13 @@ struct City_Rdb {
   dialogController:CustomDialogController=new CustomDialogController({
     builder: CustomDialogComponent({
       get_data:()=>{
-        this.aboutToAppear()
+        this.onPageShow()
         console.info('刷新')
+      },flush:()=>{
+        this.Get_preference().then((p)=>{
+          p.put('city_data',this.city)
+          p.flush()
+        })
       },
       confirm:()=>{},
       city:$city
@@ -58,7 +63,7 @@ struct City_Rdb {
   })
 
 
-  aboutToAppear(): void {
+  onPageShow(): void {
     HttpUtil_local.GetData().then((v)=>{
       this.local_city=v.city
       HttpUtil_city.GetData(this.local_city).then((v)=>{
@@ -71,6 +76,8 @@ struct City_Rdb {
             })
           })
         })
+
+        this.card_data=[]
 
         for (let i=0;i<this.city.length;i++){
           let this_data:ShowNumViewModel=new ShowNumViewModel()

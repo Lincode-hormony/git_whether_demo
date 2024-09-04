@@ -50,6 +50,9 @@ export default struct CustomDialogComponent {
   get_data: () => void = () => {
 
   }
+  flush:()=>void=()=>{
+
+  }
   confirm: () => void = () => {
   }
   @Link city:Array<CityPassViewModel>
@@ -134,8 +137,9 @@ export default struct CustomDialogComponent {
                     this.city_pass.name=v.name
                     this.city_pass.id=v.id
                     this.city.push(this.city_pass)
+                    this.flush()
                     this.controller?.close()
-                    //this.get_data()
+                    this.get_data()
                   })
               }
             })
