@@ -172,7 +172,7 @@ this.Get_preference().then((preference)=>{
         router.pushUrl({
           url:'pages/Index',
           params:{
-            info:'101010100'
+            info:0
           }
 
         })
@@ -188,6 +188,9 @@ this.Get_preference().then((preference)=>{
         .onClick(()=>{
           router.pushUrl({
             url:'pages/Index',
+            params:{
+              info:index+1
+            }
           })
         })
         .swipeAction({ end: {builder:this.delButton(index)} })

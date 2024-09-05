@@ -53,6 +53,50 @@ struct Index {
   @State local_id:string=''
   @State local_cityData:CityMainViewModel=new CityMainViewModel()
 
+  @State numa:number=0
+
+  @State num_local:number=0
+
+  private scrollerForList: Scroller = new Scroller()
+
+  private scrollerForList1: Scroller = new Scroller()
+
+  @State ref:boolean=false
+  @State change1:number=0
+
+  @State ref1:boolean=false
+  @State change2:number=0
+
+  @State index:number=0
+  @State obj:object=router.getParams()
+
+  @Builder
+  customRefreshComponent(num:number)
+  {
+    Stack()
+    {
+      Row()
+      {
+        if(num==1){
+          LoadingProgress().height(16)
+          Text("下拉刷新").fontSize(10).margin({left:20}).fontColor(Color.White)
+        }else if(num==2){
+          LoadingProgress().height(16)
+          Text("松开刷新").fontSize(10).margin({left:20}).fontColor(Color.White)
+        }else if(num==3){
+          LoadingProgress().height(16)
+          Text("页面刷新中").fontSize(10).margin({left:20}).fontColor(Color.White)
+        }
+
+      }
+      .alignItems(VerticalAlign.Center)
+    }
+    .align(Alignment.Start)
+    .clip(true)
+    .constraintSize({minHeight:32}) // 设置最小高度约束保证自定义组件高度随刷新区域高度变化时自定义组件高度不会低于minHeight
+    .width("100%")
+  }
+
   aboutToAppear(): void {
 
   }
@@ -179,6 +223,11 @@ struct Index {
 
              })
            })
+     if(this.obj){
+       this.index=this.obj['info']
+
+     }
+
    }
 
    onPageHide(): void {
@@ -202,19 +251,28 @@ struct Index {
       Row(){
         Column(){
           if (this.city.length==0) {
-            Text(this.local_city)
-              .fontSize(22)
-              .fontColor(Color.White)
-              .margin({top:15})
-          } else {
-            if(this.num==0){
+            if(this.numa<45){
               Text(this.local_city)
                 .fontSize(22)
                 .fontColor(Color.White)
                 .margin({top:15})
+
+            }else{
+              Text(this.local_city)
+                .fontSize(5)
+                .fontColor(Color.White)
+                .margin({top:15})
+            }
+
+          } else {
+            if(this.num==0){
+              Text(this.local_city)
+                .fontSize(this.num_local<45?22-(this.num_local)/10:17.5)
+                .fontColor(Color.White)
+                .margin({top:15})
             }else if(this.num>0 && this.city){
               Text(this.city[this.num-1].name)
-                .fontSize(22)
+                .fontSize(this.numa<45?22-(this.numa)/10:17.5)
                 .fontColor(Color.White)
                 .margin({top:15})
             }else {
@@ -261,77 +319,96 @@ struct Index {
 
       Swiper(this.swiperController){
 
-        //本地城市信息渲染
-        List() {
-          //温度显示
-          ListItem() {
-            ShowNum({ itemInfo: this.local_cityData.ShowNumData })
-          }
-          .margin({ top: 60 })
+        Refresh({refreshing:$$this.ref,builder:this.customRefreshComponent(this.change1)}){
+          List({scroller:this.scrollerForList1}) {
+            //温度显示
+            ListItem() {
+              ShowNum({ itemInfo: this.local_cityData.ShowNumData })
+            }
+            .margin({ top: 60 })
 
-          //建议
-          ListItem() {
-            mySwiper({ itemInfo: this.local_cityData.SwiperData })
-          }
-          .margin({ top: 50 })
+            //建议
+            ListItem() {
+              mySwiper({ itemInfo: this.local_cityData.SwiperData })
+            }
+            .margin({ top: 50 })
 
-          //时间段
-          ListItem() {
-            TimeList({ itemInfo: this.local_cityData.HourlyData })
-          }
-          .margin({ top: 20 })
+            //时间段
+            ListItem() {
+              TimeList({ itemInfo: this.local_cityData.HourlyData })
+            }
+            .margin({ top: 20 })
 
-          //未来十五天
-          ListItem() {
-            DayList({ itemInfo: this.local_cityData.DailyData })
-          }
-          .margin({ top: 20 })
+            //未来十五天
+            ListItem() {
+              DayList({ itemInfo: this.local_cityData.DailyData })
+            }
+            .margin({ top: 20 })
 
-          //空气质量
-          ListItem() {
-            Air({ itemInfo: this.local_cityData.AirData })
-          }
-          .margin({ top: 20 })
+            //空气质量
+            ListItem() {
+              Air({ itemInfo: this.local_cityData.AirData })
+            }
+            .margin({ top: 20 })
 
-          //六张小卡片
-          ListItem() {
-            myGird({ itemInfo: this.local_cityData.GirdData })
-          }
-          .margin({ top: 20 })
+            //六张小卡片
+            ListItem() {
+              myGird({ itemInfo: this.local_cityData.GirdData })
+            }
+            .margin({ top: 20 })
 
-          //日出日落
-          ListItem() {
-            Time({ itemInfo: this.local_cityData.TimeData })
-          }
-          .margin({ top: 20 })
+            //日出日落
+            ListItem() {
+              Time({ itemInfo: this.local_cityData.TimeData })
+            }
+            .margin({ top: 20 })
 
-          //央视预报
-          ListItem() {
-            myVideo()
-          }
-          .margin({ top: 20 })
+            //央视预报
+            ListItem() {
+              myVideo()
+            }
+            .margin({ top: 20 })
 
-          //生活建议
-          ListItem() {
-            Advice()
-          }
-          .margin({ top: 20 })
+            //生活建议
+            ListItem() {
+              Advice()
+            }
+            .margin({ top: 20 })
 
-          ListItem() {
-            Text('OpenHarmony--天气预报')
-              .textAlign(TextAlign.Center)
-              .width('100%')
-              .fontColor('#b3ffffff')
-              .fontWeight(800)
+            ListItem() {
+              Text('OpenHarmony--天气预报')
+                .textAlign(TextAlign.Center)
+                .width('100%')
+                .fontColor('#b3ffffff')
+                .fontWeight(800)
+            }
+            .margin({ top: 20 })
           }
-          .margin({ top: 20 })
+          .onDidScroll(()=>{
+            this.num_local=this.scrollerForList1.currentOffset().yOffset
+          })
+          .scrollBar(BarState.Off)
+
+
         }
+        .onRefreshing(()=>{
+          setTimeout(()=>{
+            this.ref=false
+          },2000)
+        })
+        .onStateChange((value)=>{
+          this.change1=value
+        })
+        .margin({top:42})
+
+        //本地城市信息渲染
 
 
         //列表城市信息渲染
         ForEach(this.CityData,(value:CityMainViewModel)=>{
           //List组件
-          List(){
+          Refresh({refreshing:$$this.ref1,builder:this.customRefreshComponent(this.change2)}){
+          List({scroller:this.scrollerForList}){
             //温度显示
             ListItem(){
               ShowNum({itemInfo:value.ShowNumData})
@@ -401,10 +478,23 @@ struct Index {
           .height('100%')
           .backgroundColor('#ff2c6bca')
           .scrollBar(BarState.Off)
+          .onDidScroll(()=>{
+            this.numa=this.scrollerForList.currentOffset().yOffset
+          })
+          }
+          .margin({top:40})
+          .onRefreshing(()=>{
+            setTimeout(()=>{
+              this.ref1=false
+            },2000)
+          })
+          .onStateChange((value)=>{
+            this.change2=value
+          })
         })
       }
       .loop(false)
-      .indicator(
+      .indicator(this.numa>45||this.num_local>45?false:
         Indicator.dot()
           .left(5)
           .top(28)
@@ -415,9 +505,12 @@ struct Index {
           .color('#66ffffff')
           .selectedColor('#ffffffff')
       )
+      .index(this.index)
       .onChange((index)=>{
         this.num=index
       })
+
+
 
 
 
