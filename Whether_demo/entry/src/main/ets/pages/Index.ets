@@ -505,7 +505,7 @@ struct Index {
           .color('#66ffffff')
           .selectedColor('#ffffffff')
       )
-      .index(this.index)
+      //.index(this.index)
       .onChange((index)=>{
         this.num=index
       })
